@@ -1,0 +1,278 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PepLab 작업 보고서</title>
+<style>
+:root {
+  --bg: #ffffff; --fg: #1f2933; --muted: #5f6b7a; --line: #dde3ea; --card: #f6f8fa;
+  --accent: #1f6feb; --accent-soft: #e8f0fe; --warn-bg: #fff6e0; --warn-line: #e6b422; --ok: #1a7f37;
+  --code-bg: #f0f3f6;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #11161c; --fg: #e3e8ee; --muted: #9aa7b5; --line: #2a333d; --card: #1a212a;
+    --accent: #6ea8fe; --accent-soft: #1b2a40; --warn-bg: #2d2610; --warn-line: #b8901c; --ok: #4ac26b;
+    --code-bg: #212a35;
+  }
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  margin: 0; background: var(--bg); color: var(--fg);
+  font: 16px/1.7 -apple-system, "Segoe UI", "Malgun Gothic", "Apple SD Gothic Neo", sans-serif;
+}
+.layout { display: grid; grid-template-columns: 230px minmax(0, 1fr); gap: 40px; max-width: 1180px; margin: 0 auto; padding: 0 20px; }
+nav.toc { position: sticky; top: 0; align-self: start; max-height: 100vh; overflow: auto; padding: 32px 0; font-size: 14px; }
+nav.toc strong { display: block; margin-bottom: 8px; color: var(--muted); font-size: 12px; letter-spacing: .06em; }
+nav.toc a { display: block; padding: 5px 10px; border-left: 2px solid var(--line); color: var(--muted); text-decoration: none; }
+nav.toc a:hover { color: var(--accent); border-left-color: var(--accent); }
+main { padding: 40px 0 80px; max-width: 860px; min-width: 0; }
+h1 { font-size: 2rem; line-height: 1.3; margin: 0 0 6px; }
+h2 { font-size: 1.4rem; margin: 48px 0 12px; padding-top: 12px; border-top: 1px solid var(--line); }
+h3 { font-size: 1.1rem; margin: 28px 0 8px; }
+p, li { overflow-wrap: anywhere; }
+.sub { color: var(--muted); margin: 0 0 24px; }
+.meta { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 24px; }
+.chip { background: var(--accent-soft); color: var(--accent); border-radius: 999px; padding: 2px 12px; font-size: 13px; font-weight: 600; }
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin: 20px 0; }
+.stat { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 14px 16px; }
+.stat b { display: block; font-size: 1.5rem; line-height: 1.2; }
+.stat span { color: var(--muted); font-size: 13px; }
+.flow { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin: 16px 0; }
+.flow .step { background: var(--card); border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; font-weight: 600; font-size: 14px; }
+.flow .step.last { border-color: var(--accent); background: var(--accent-soft); }
+.flow .arrow { color: var(--muted); }
+.table-wrap { overflow-x: auto; margin: 12px 0 20px; }
+table { border-collapse: collapse; width: 100%; font-size: 14.5px; }
+th, td { border: 1px solid var(--line); padding: 8px 12px; text-align: left; vertical-align: top; }
+th { background: var(--card); white-space: nowrap; }
+code { background: var(--code-bg); border-radius: 4px; padding: 1px 6px; font: 13.5px/1.5 Consolas, "Courier New", monospace; }
+pre { background: var(--code-bg); border-radius: 8px; padding: 14px 16px; overflow-x: auto; font: 13.5px/1.6 Consolas, "Courier New", monospace; }
+pre code { background: none; padding: 0; }
+.callout { border-left: 4px solid var(--warn-line); background: var(--warn-bg); border-radius: 6px; padding: 12px 16px; margin: 16px 0; }
+.callout.info { border-left-color: var(--accent); background: var(--accent-soft); }
+.callout p { margin: 4px 0; }
+ul, ol { padding-left: 1.4em; }
+li { margin: 3px 0; }
+.ok { color: var(--ok); font-weight: 600; }
+footer { margin-top: 56px; color: var(--muted); font-size: 13px; border-top: 1px solid var(--line); padding-top: 14px; }
+@media (max-width: 860px) {
+  .layout { grid-template-columns: minmax(0, 1fr); gap: 0; padding: 0 16px; }
+  nav.toc { position: static; max-height: none; padding: 20px 0 0; }
+  nav.toc a { display: inline-block; border-left: 0; padding: 3px 8px 3px 0; }
+  h1 { font-size: 1.6rem; }
+}
+@media print {
+  nav.toc { display: none; }
+  .layout { display: block; max-width: none; padding: 0; }
+  body { font-size: 12pt; background: #fff; color: #000; }
+  h2 { break-after: avoid; }
+  table, pre, .callout, .stat { break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+<div class="layout">
+<nav class="toc" aria-label="목차">
+  <strong>목차</strong>
+  <a href="#overview">1. 개요</a>
+  <a href="#screens">2. 앱 화면 구성</a>
+  <a href="#features">3. 핵심 기능</a>
+  <a href="#scoring">4. 점수 방식과 한계</a>
+  <a href="#history">5. 개발 과정</a>
+  <a href="#structure">6. 기술 구조</a>
+  <a href="#run">7. 실행 · 검증</a>
+  <a href="#next">8. 남은 과제</a>
+</nav>
+
+<main>
+<h1>PepLab 작업 보고서</h1>
+<p class="sub">펩타이드·단백질 검색 → 서열 추천 → 분석을 연습하는 Streamlit 앱 — 지금까지의 작업 정리</p>
+<div class="meta">
+  <span class="chip">2026-10-12 기준</span>
+  <span class="chip">Streamlit 1.64</span>
+  <span class="chip">Python 3.11</span>
+  <span class="chip">테스트 281개 통과</span>
+</div>
+
+<section id="overview">
+<h2>1. 개요</h2>
+<p>PepLab은 논문·특허·UniProt에 알려진 펩타이드/단백질을 찾아 <b>서열과 출처, 발굴 방법, 결합 대상, 보고된 결합 친화도</b>를 함께 기록하고, 결합 대상(표면)에 붙을 것 같은 새 서열을 자동으로 추천받아 물성을 분석해 보는 <b>연습용 앱</b>입니다. 신약 설계 도구가 아니라 흐름을 직접 체험하는 데 목적이 있습니다.</p>
+<div class="stats">
+  <div class="stat"><b>5개</b><span>화면 탭</span></div>
+  <div class="stat"><b>6종</b><span>표면 분류 (폴리머·티타늄·귀금속·실리카·아파타이트·탄소)</span></div>
+  <div class="stat"><b>281개</b><span>자동 테스트 (모두 통과)</span></div>
+  <div class="stat"><b>6개</b><span>마일스톤 (M1~M6 완료)</span></div>
+</div>
+<div class="callout">
+  <p><b>가장 중요한 한계:</b> 앱의 점수는 표면별 잔기 가중치로 만든 <b>학습용 휴리스틱</b>이며 결합 친화도(Kd) 예측이 아닙니다. 점수가 오른다고 실제 결합이 좋아진다는 뜻이 아닙니다. 모르는 값은 추측하지 않고 "미보고"로 표시합니다.</p>
+</div>
+</section>
+
+<section id="screens">
+<h2>2. 앱 화면 구성</h2>
+<div class="flow" aria-label="탭 순서">
+  <span class="step">🔎 검색</span><span class="arrow">→</span>
+  <span class="step">🔧 개선형 추천</span><span class="arrow">→</span>
+  <span class="step">📊 서열 분석</span><span class="arrow">→</span>
+  <span class="step">🧲 결합 친화도</span><span class="arrow">→</span>
+  <span class="step last">🎯 전체 서열 기반 추천</span>
+</div>
+<p>왼쪽 사이드바에는 <b>내 서열</b> 목록(현재 서열 선택, 삭제, 발굴 방법·결합 대상 편집)과 FASTA/CSV 내보내기가 있습니다. 탭 위쪽에는 현재 서열의 이름·출처·요약 문장이 항상 표시됩니다.</p>
+<div class="table-wrap"><table>
+<tr><th>탭</th><th>하는 일</th></tr>
+<tr><td>🔎 검색</td><td>UniProt 검색, 논문·특허에서 서열 찾기(전문 확인 포함), 직접 입력·프리셋. 채택한 서열에 출처·발굴 방법·결합 대상을 기록</td></tr>
+<tr><td>🔧 개선형 추천</td><td>서열 하나를 골라(또는 직접 입력해) 몇 개 잔기만 바꿔 점수가 오르는 개선형을 추천</td></tr>
+<tr><td>📊 서열 분석</td><td>물성 비교, 서열 정렬, 소수성·조성·helical wheel 그림</td></tr>
+<tr><td>🧲 결합 친화도</td><td>문헌에서 보고된 Kd/Ka/ΔG 기록·단위 변환, 계산값과 측정값 구분, 순위 상관</td></tr>
+<tr><td>🎯 전체 서열 기반 추천</td><td>결합 표면을 고르면 알려진 결합 서열 전체를 참고해 새 서열을 자동 추천</td></tr>
+</table></div>
+</section>
+
+<section id="features">
+<h2>3. 핵심 기능</h2>
+
+<h3>3.1 검색</h3>
+<ul>
+  <li><b>UniProt</b>: 키워드·ID 검색, 상세 확인, 성숙 구간 선택.</li>
+  <li><b>논문 · 특허</b>(Europe PMC): 논문 제목이 아니라 <b>서열이 바로 보이는</b> 방식이 기본입니다. 연도 구간별로 균등하게 검색해 최근 논문에만 치우치지 않게 하고, 초록뿐 아니라 오픈액세스 <b>전문</b>(필요 시 NCBI PMC)도 읽어 서열 후보를 추출합니다. 특허 서열(PAT)과 서열 문자열 자체를 전문에서 찾는 검색도 지원합니다. 논문 이름 검색은 선택 모드입니다.</li>
+  <li><b>검색어 보조</b>: PET, PS, PE, PP, PC, PVC, PLA, PMMA, PDMS, HA 같은 약어를 풀어서 검색하고, 서열 후보의 신뢰도(상표명·시약·일반 단어 제외)를 점검합니다.</li>
+  <li><b>기록 항목</b>: 출처(PMID·DOI·특허번호), 발굴 방법(선택 목록), 결합 대상(분류·이름·조건), 보고된 친화도. 자동 제안값은 "미검증"으로 구분하고 확정 후 반영합니다. 비표준 요소(D-아미노산, 말단 변형, 비천연 아미노산)는 경고와 함께 메모로 보존합니다.</li>
+</ul>
+
+<h3>3.2 🔧 개선형 추천</h3>
+<ul>
+  <li><b>입력 방식 2가지</b>: ① 검색해서 채택한 내 서열에서 선택, ② 서열 직접 입력(저장 없이도 추천 가능, 개선형을 저장할 때 입력 서열도 부모로 함께 저장).</li>
+  <li>설정: 결합 표면(서열에 기록된 결합 대상에서 자동 선택), 최대 변이 수(기본 3), 추천 개수, <b>바꾸지 않을 위치</b>(예: <code>1-3, 7</code>), 참고할 알려진 서열과 반영 비중.</li>
+  <li>방식: 부모에서 최대 k개 위치를 치환한 변이체를 <b>빔 탐색</b>(폭 100)으로 훑고, 바꾼 잔기 하나당 2점의 비용을 물려 적게 바꾸는 쪽을 우선합니다. 부모보다 점수가 오른 후보만, 서로 3곳 이상 다르게 고릅니다.</li>
+  <li>결과: 변경 표기(예 <code>D5R</code>), 부모 대비 점수, 변이별 표면 가중치 변화, 잔기 기여 그림. 오르는 변이가 없으면 "이미 (국소) 최적"이라고 알립니다. 저장하면 부모에 연결된 설계된 서열(비실험)이 됩니다.</li>
+</ul>
+
+<h3>3.3 🎯 전체 서열 기반 추천</h3>
+<ul>
+  <li>표면별 <b>알려진 서열 목록</b>(문헌 예시 + 내가 채택해 해당 표면 결합으로 기록한 서열)을 보여주고, 참고할 서열을 고르게 합니다.</li>
+  <li>방식: <b>유전 알고리즘</b>으로 후보를 만들고, 점수 = 표면 점수 + 알려진 서열과의 유사도(잔기 구성 + 연속 2잔기 모티프) − 제약 벌점(용해도·응집·Cys·연속 잔기 등). 알려진 서열을 섞은 재조합에서 탐색을 시작하며, 80% 이상 같은 복사본은 제외하고 서로 잔기 구성이 다른 후보를 고릅니다. 같은 설정이면 결과가 재현됩니다.</li>
+  <li><b>기준선 확인</b>: 알려진 서열 자신의 점수를 함께 보여주고, 점수가 낮은 표면(티타늄)에서는 경고합니다.</li>
+  <li>문헌 서열 예시: 폴리머 4개(PET·PE·PP·PS 설계 서열), 티타늄 3개(TBP-1, TiBP1, TiBP2).</li>
+</ul>
+
+<h3>3.4 두 추천 탭 공통</h3>
+<p>결과 아래에서 저장하지 않아도 전체 후보의 물성(분자량·pI·순전하·GRAVY·불안정성 지수)을 비교할 수 있습니다(개선형 추천에서는 부모도 함께 표시). 구조 예측 기능은 없습니다.</p>
+
+<h3>3.5 📊 서열 분석 · 🧲 결합 친화도</h3>
+<ul>
+  <li><b>서열 분석</b>: 물성 비교, 서열 정렬(동일성·차이 위치), 소수성 플롯·조성·helical wheel.</li>
+  <li><b>결합 친화도</b>: Kd/Ka/ΔG 변환(ΔG = RT ln Kd, 298 K), 문헌 보고값과 계산값의 구분, 본문에서의 값 후보 추출, 앱 점수와 보고값의 Spearman 순위 상관.</li>
+</ul>
+<h3>3.6 엑셀 내보내기</h3>
+<ul>
+  <li>사이드바와 각 탭의 <b>📥 전체 결과 엑셀(.xlsx) 내보내기</b> 버튼으로 한 파일을 내려받습니다.</li>
+  <li>시트: 안내 · 내 서열 · 결합 성향 점수 · 결합 친화도 · 예측 vs 보고값 · (실행했다면) 개선형 추천 · 전체 서열 기반 추천 · 참고한 알려진 서열 · 논문 검색 결과. <b>모든 결과가 한 파일</b>에 들어가고, 추천은 여러 번 실행해도 실행 번호·시각 열과 함께 한 시트에 쌓입니다(앱을 끄면 기록은 사라짐).</li>
+  <li>추천 결과를 내 서열에 저장하지 않아도 내보낼 수 있고, 엑셀 라이브러리 없이 앱이 <code>.xlsx</code>를 직접 만듭니다(표준 구조를 XML 파서로 되읽어 검증했으며, 실제 Excel에서 열어 본 확인은 별도로 필요).</li>
+</ul>
+</section>
+
+<section id="scoring">
+<h2>4. 점수 방식과 한계</h2>
+<p><b>표면 결합 성향 점수</b>: 표면 6종(폴리머, 티타늄, 귀금속, 실리카, 아파타이트, 탄소)마다 잔기별 가중치를 두고, 서열의 점수를 무작위 서열과 비교한 백분위와 0~100으로 환산한 점수로 표시합니다. 추천에서는 포화되지 않는 환산 점수를 씁니다.</p>
+<div class="table-wrap"><table>
+<tr><th>항목</th><th>실제 평가 결과</th></tr>
+<tr><td>결합할 법한 서열 구분</td><td>비교적 잘함 (무작위 서열보다 확실히 높은 점수)</td></tr>
+<tr><td>결합 세기 순위</td><td>잘 못함 — 점수가 오른다고 Kd가 좋아진다는 뜻이 아님</td></tr>
+<tr><td>티타늄</td><td>문헌의 알려진 Ti 결합 서열이 이 점수에서 낮게 나옴 → 기준선이 약하다는 경고 표시</td></tr>
+<tr><td>이미 좋은 서열</td><td>개선 후보가 거의 없거나 "이미 국소 최적"으로 보고됨 (거짓 개선을 만들지 않음)</td></tr>
+<tr><td>반영하지 못하는 것</td><td>서열 순서 전체, 3D 구조, pH, 이온 세기. 보고된 친화도 값은 추천에 쓰이지 않음</td></tr>
+</table></div>
+<div class="callout info">
+  <p><b>MD(분자동역학) 예측값은 제공하지 않습니다.</b> 표면 결합 에너지 계산에는 표면 모델과 힘장 준비, 수 시간의 계산이 필요해 앱 안에 넣지 않았습니다. 추천된 서열을 MD 입력 파일로 내보내는 방안은 아직 결정 전입니다(8장).</p>
+</div>
+</section>
+
+<section id="history">
+<h2>5. 개발 과정</h2>
+<h3>5.1 마일스톤</h3>
+<div class="table-wrap"><table>
+<tr><th>단계</th><th>내용</th><th>상태</th></tr>
+<tr><td>M1 골격</td><td>탭 구조, <code>SeqRecord</code> 데이터 모델, 프리셋, 입력 검증</td><td class="ok">완료</td></tr>
+<tr><td>M2 UniProt 검색</td><td>검색·상세·성숙 구간 선택, 출처 기록, 물성 표시</td><td class="ok">완료</td></tr>
+<tr><td>M3 논문·특허</td><td>서열 후보 추출(1문자/3문자/SEQ ID NO), 발굴 방법·결합 대상 기록, 비표준 경고</td><td class="ok">완료</td></tr>
+<tr><td>M4 설계·스크리닝</td><td>변이 설계, 정렬, 그림, 필터 깔때기·점수·순위 (이후 추천 중심으로 재설계)</td><td class="ok">완료</td></tr>
+<tr><td>M5 구조</td><td>AlphaFold DB, ESMFold, 3D 뷰어 (이후 구조 탭과 구조 예측 화면을 모두 제거)</td><td class="ok">완료</td></tr>
+<tr><td>M6 마감</td><td>README, 오류 처리, 디스크 캐시, 점검</td><td class="ok">완료</td></tr>
+</table></div>
+
+<h3>5.2 사용자 요청에 따른 주요 변경</h3>
+<ol>
+  <li><b>논문 검색 방식 변경(2026-10-02)</b>: 논문 제목 선택 단계 없이 서열이 바로 보이게 하고 전 기간 논문을 대상으로 함. 기본 정렬이 최근 논문에 치우쳐 있던 문제를 연도 구간별 균등 검색으로 해결.</li>
+  <li><b>검색 정확도 개선</b>: "PET binding peptide" 같은 질의가 대상 결합 서열을 찾도록 약어 확장, 초록뿐 아니라 전문 확인, 서열 문자열 전문 검색 추가.</li>
+  <li><b>결합 친화도 탭 추가</b>: 표면/소재 대상, 보고값 기록과 앱 점수 비교(Spearman).</li>
+  <li><b>설계 방식 전환</b>: 무작위·변이 서열을 직접 만드는 화면을 없애고, 대상과의 결합 성향이 높을 서열을 자동으로 추천하는 방식만 남김.</li>
+  <li><b>새 서열도 바로 분석</b>: 저장하지 않아도 추천 결과의 물성을 바로 확인.</li>
+  <li><b>추천 탭 2개로 분리(2026-10-12)</b>: 개선형 추천 + 알려진 전체 서열 기반 추천, 구조 탭 제거, 유사도에 2-mer 모티프 추가.</li>
+  <li><b>엑셀 내보내기와 휴대용 패키지</b>: 결과 전체를 .xlsx 한 파일로 내보내는 버튼 추가, 파이썬 없이 실행하는 휴대용 폴더(<code>PepLab 실행.bat</code>) 제공.</li>
+  <li><b>구조 예측 기능 제거</b>: 추천·분석 탭의 ESMFold 구조 예측도 없애 사용자 요청에 따라 앱이 외부 구조 서버 없이 동작하게 함.</li>
+  <li><b>개선형 입력 방식 확장</b>: 채택한 서열에서 선택 / 직접 입력 두 가지. 탭 순서를 전체 서열 기반 추천이 마지막이 되도록 변경.</li>
+</ol>
+
+<h3>5.3 점검 중 발견해 고친 문제</h3>
+<ul>
+  <li>새로 추가·저장한 서열이 현재 서열로 선택되지 않던 버그 (사이드바 선택이 이전 값을 덮어씀).</li>
+  <li>서열을 추가하면 화면이 첫 탭으로 되돌아가던 문제 (탭 위쪽 요소를 하나의 고정 컨테이너로 묶어 해결, 브라우저에서 확인).</li>
+  <li>추천 후보가 모두 같은 잔기 구성이 되던 문제 → 구성 거리 기준 다양성 선택.</li>
+  <li>점수가 0에서 잘려 개선 폭이 안 보이던 문제 → 실제 값(음수 가능) 표시.</li>
+  <li>입력 위젯의 기본값이 첫 실행 값에 고정되던 문제 → 위젯 키에 맥락을 포함.</li>
+</ul>
+</section>
+
+<section id="structure">
+<h2>6. 기술 구조</h2>
+<pre><code>app.py                  Streamlit 진입점 (사이드바 + 5개 탭)
+src/
+  sources/              UniProt, Europe PMC, 서열 후보 추출, 검색어 보조, 결합 정보, 디스크 캐시
+  analysis/             물성, 정렬, 그림, 표면 결합 점수(binding_score)
+  design/               recommend.py (전체 서열 기반 추천), improve.py (개선형 추천)
+  structure/            (화면에서 쓰지 않음) ESMFold, PDB 유틸, 3D 뷰어 코드
+  export.py             엑셀(.xlsx) 내보내기 (외부 라이브러리 없음)
+  ui/                   탭별 화면, 공용 물성 표(structure_view.py), 세션 상태
+tests/                  281개 테스트 (로직 단위 테스트 + Streamlit AppTest 화면 흐름)
+docs/                   PRD, PLAN, development/ (마일스톤 문서), 이 보고서</code></pre>
+<div class="table-wrap"><table>
+<tr><th>외부 서비스</th><th>용도</th></tr>
+<tr><td>UniProt REST</td><td>서열·메타데이터 검색</td></tr>
+<tr><td>Europe PMC REST</td><td>논문·특허 검색, 오픈액세스 전문, 서열 문자열 전문 검색</td></tr>
+<tr><td>NCBI PMC</td><td>전문 가져오기 보조 경로</td></tr>
+</table></div>
+<p>화면에서는 쓰지 않지만 코드는 보존한 모듈: 변이 생성(<code>design/mutate.py</code>), 스크리닝 깔때기(<code>analysis/screen.py</code>), AlphaFold DB 조회(<code>sources/alphafold.py</code>), 구조 비교·RMSD(<code>structure/compare.py</code>), ESMFold 클라이언트(<code>structure/esmfold.py</code>).</p>
+<p>설계 원칙: 화면과 로직 분리(로직은 Streamlit 없이 테스트), 외부 API 호출은 테스트에서 mock, 응답은 TTL 디스크 캐시(실패는 캐시하지 않음), 같은 설정이면 결과가 재현되는 추천.</p>
+</section>
+
+<section id="run">
+<h2>7. 실행 · 검증</h2>
+<pre><code>streamlit run app.py        # http://localhost:8501
+python -m pytest -q         # 281 passed</code></pre>
+<ul>
+  <li><b>파이썬 없이 실행</b>: <code>PepLab_portable.zip</code>을 풀고 <code>PepLab 실행.bat</code>을 더블클릭합니다(Windows 전용, 파이썬 실행기와 패키지 포함). 파이썬이 PATH에 없는 상태에서 번들 실행기만으로 서버 기동과 추천 실행을 확인했으며, 다른 PC에서 직접 열어 본 것은 아닙니다.</li>
+  <li><b>자동 테스트</b>: 281개 모두 통과 — 추천·개선 엔진, 점수, 서열 추출, 친화도 변환, 화면 흐름(검색 → 채택 → 추천 → 저장)을 포함합니다.</li>
+  <li><b>브라우저 확인</b>: 탭 5개와 순서, 개선형 추천의 변이체 생성, 서열 추가 후 탭이 유지되는지를 내장 브라우저에서 확인했습니다.</li>
+  <li><b>실제 데이터 확인</b>: <code>titanium binding peptide</code> 검색에서 1977~2026년 논문이 수집되고 TBP-1(<code>RKLPDAPGMHTW</code>) 등이 추출됨을 확인했습니다.</li>
+</ul>
+</section>
+
+<section id="next">
+<h2>8. 남은 과제</h2>
+<ul>
+  <li><b>MD 연계(결정 대기)</b>: ① 추천 서열의 FASTA/PDB를 MD 입력용으로 내보내기(권장), ② 용액 중 짧은 MD를 앱에서 실행, ③ 안내 문서만 추가 중 선택 필요.</li>
+  <li><b>미구현</b>: 펩타이드 전용 DB(APD3, DRAMP) 연동, PDB 실험 구조 검색, 오픈액세스 전문 XML의 정밀 파싱, 특허 사이트 자동 연동(약관·접근성 문제로 제외).</li>
+  <li><b>점수 고도화</b>: 보고된 친화도를 이용한 보정, 서열 순서·구조를 반영하는 모델은 연습 범위 밖으로 남겨 둠.</li>
+  <li><b>엑셀 호환 확인</b>: 내보낸 파일을 실제 Excel에서 열어 서식·한글이 정상인지 확인이 필요합니다.</li>
+  <li><b>이 보고서 활용</b>: 브라우저에서 인쇄(PDF로 저장)하면 문서로 배포할 수 있습니다.</li>
+</ul>
+</section>
+
+<footer>PepLab 작업 보고서 · 2026-10-12 · 점수는 학습용 휴리스틱이며 실험적 결합 친화도를 대신하지 않습니다.</footer>
+</main>
+</div>
+</body>
+</html>

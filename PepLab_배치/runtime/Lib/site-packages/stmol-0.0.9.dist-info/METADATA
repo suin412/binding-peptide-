@@ -1,0 +1,16 @@
+Metadata-Version: 2.1
+Name: stmol
+Version: 0.0.9
+Summary: Streamlit component for molecular visualization
+Home-page: https://github.com/napoles-uach/streamlit_3dmol
+Author: Jose Manuel Napoles Duarte
+Author-email: jnapoles@uach.mx
+Requires-Python: >=3.6
+Description-Content-Type: text/plain
+License-File: LICENSE
+Requires-Dist: streamlit (>=0.63)
+Requires-Dist: py3Dmol
+Requires-Dist: ipyspeck (==0.6.1)
+Requires-Dist: ipywidgets (==7.6.3)
+
+stmol is based on popular visualization software 3Dmol.js
