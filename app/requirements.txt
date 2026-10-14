@@ -1,0 +1,7 @@
+streamlit>=1.40
+biopython>=1.84
+requests>=2.31
+pandas>=2.0
+matplotlib>=3.8
+py3Dmol>=2.0
+pytest>=8.0
